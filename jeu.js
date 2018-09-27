@@ -18,6 +18,7 @@ var joueur,
     bots = [];
 
 var pique = false;
+var stop = false;
 var botJoue = false;
 
 
@@ -33,11 +34,19 @@ var joueurObj = function(is_human) {
         if(is_human) {
             botJoue = false;
 
+            if( stop ) {
+                //stop 
+                stop = false;
+                botJoue = true;
+                return null;
+            }
+
             if(!joueurPeutJouer()) {
                 botJoue = true;
                 this.main.push(banque.pop());
                 return null;
             }
+
 
             if(pot[0] === 7 && pique ) {
                 botJoue = true;
@@ -54,6 +63,9 @@ var joueurObj = function(is_human) {
                 if(pot[0] === 7) {
                     pique = true;
                 }
+                if(pot[0] === 0) {
+                    stop = true;
+                }
                 botJoue = true;
                 return null;
             }
@@ -67,6 +79,11 @@ var joueurObj = function(is_human) {
             if(this.main.length === 0){
                 return null;
             }
+
+            if(stop) {
+                stop = false;
+                return null;
+            }
     
             if(pot[0] === 7 && pique ) {
                 this.main.push(banque.pop());
@@ -75,7 +92,9 @@ var joueurObj = function(is_human) {
                 console.log(this.main);
                 return null;
             }
+
             
+            //strategie de jeu du bot
             for (let i = 0; i < this.main.length; i++) {
                 var c = this.main[i];
     
@@ -85,6 +104,9 @@ var joueurObj = function(is_human) {
                     this.main.splice(i, 1);
                     if(pot[0] === 7) {
                         pique = true;
+                    }
+                    if(pot[0] === 0) {
+                        stop = true;
                     }
                     console.log(this.main);
                     return null;
@@ -170,8 +192,9 @@ function joueurPerd() {
         if(bots[i].main.length !== 0) {
             return false;
         }
-        return true;
+        
     }
+    return true;
 }
 
 function afficher_main(main) {
